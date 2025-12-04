@@ -1,27 +1,47 @@
 import sys
 from datetime import date
 from collections import defaultdict
+import os
+from pathlib import Path
+
+
 
 # Add the Gramps source directory to the path if not already there.
 # This might need to be adjusted based on your Gramps installation.
-# For example, on Linux, it might be something like:
-# /usr/share/gramps/gramps
-# On macOS, it might be in the app bundle.
-# On Windows, it's typically in Program Files.
-try:
-    from gramps.gen.db import Db
-    from gramps.gen.const import GRAMPS_LOCALE as glocale
-    from gramps.gen.lib import Person, FamilyRelType
-    from gramps.gen.lib.date import Date
-except ImportError:
-    print(
-        "Error: Gramps modules not found. "
-        "Please ensure the Gramps source directory is in your Python path."
-    )
-    print(
-        "You might need to add it using sys.path.append('/path/to/gramps_src')"
-    )
+
+
+
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Assuming 'gramps_src' is the submodule directory name
+GRAMPS_INSTALL_PATH = Path(script_dir).parent.joinpath("gramps-6.0.6").joinpath("gramps")
+
+if not os.path.exists(GRAMPS_INSTALL_PATH):
+    print(f"Error: Gramps submodule not found at {GRAMPS_INSTALL_PATH}")
+    print("Please ensure the submodule is correctly initialized and updated.")
     sys.exit(1)
+
+if GRAMPS_INSTALL_PATH not in sys.path:
+    sys.path.insert(0, GRAMPS_INSTALL_PATH)
+
+
+
+# try:
+from gramps.gen.db import Database as Db
+from gramps.gen.const import GRAMPS_LOCALE as glocale
+from gramps.gen.lib import Person, FamilyRelType
+from gramps.gen.lib.date import Date
+# except ImportError as e:
+#     print(
+#         "Error: Gramps modules not found. "
+#         "Please ensure the Gramps source directory is in your Python path."
+#     )
+#     print(
+#         "You might need to add it using sys.path.append('/path/to/gramps_src')"
+#     )
+#     print(e)
+#     sys.exit(1)
 
 # Internationalisation
 try:
@@ -301,7 +321,10 @@ class ThisDayInFamilyHistoryGenerator:
 
     def __init__(self, db_path):
         self.db_path = db_path
-        self.db = Db()
+		self.dbstate = DbState()
+		self.dbman = CLIDbManager(self.dbstate)
+		self.dbman.read_file(db_path)
+		self.db = self.dbstate.db
         self.deceased_person_gids = set()
         self.events_by_day = defaultdict(list)
 
@@ -612,7 +635,7 @@ if __name__ == "__main__":
     # Example for Linux: "/home/user/.gramps/grampsdb/MyFamilyTree.gramps"
     # Example for macOS: "/Users/user/Library/Application Support/Gramps/grampsdb/MyFamilyTree.gramps"
     # Example for Windows: "C:\\Users\\user\\AppData\\Roaming\\Gramps\\grampsdb\\MyFamilyTree.gramps"
-    GRAMPS_DB_PATH = "path/to/your/gramps/database.gramps"
+    GRAMPS_DB_PATH = "./tree.gramps"
 
     # IMPORTANT: You might need to add the Gramps source directory to your
     # Python path for the `from gramps.gen.db import Db` to work.

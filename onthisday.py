@@ -15,7 +15,7 @@ from pathlib import Path
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Assuming 'gramps_src' is the submodule directory name
-GRAMPS_INSTALL_PATH = Path(script_dir).parent.joinpath("gramps-6.0.6").joinpath("gramps")
+GRAMPS_INSTALL_PATH = Path(script_dir).parent.joinpath("gramps-6.0.6")
 
 if not os.path.exists(GRAMPS_INSTALL_PATH):
 	print(f"Error: Gramps submodule not found at {GRAMPS_INSTALL_PATH}")
@@ -28,7 +28,8 @@ if GRAMPS_INSTALL_PATH not in sys.path:
 
 
 # try:
-from gramps.gen.db import Database as Db
+from gramps.gen.dbstate import DbState
+from gramps.cli.grampscli import CLIManager
 from gramps.gen.const import GRAMPS_LOCALE as glocale
 from gramps.gen.lib import Person, FamilyRelType
 from gramps.gen.lib.date import Date
@@ -322,8 +323,11 @@ class ThisDayInFamilyHistoryGenerator:
 	def __init__(self, db_path):
 		self.db_path = db_path
 		self.dbstate = DbState()
-		self.dbman = CLIDbManager(self.dbstate)
-		self.dbman.read_file(db_path)
+		self.dbman = CLIManager(self.dbstate, True, None)
+	
+		self.dbman.do_reg_plugins(self.dbstate, uistate=None)
+	    # reload_custom_filters()
+		self.dbman.open_activate(db_path)
 		self.db = self.dbstate.db
 		self.deceased_person_gids = set()
 		self.events_by_day = defaultdict(list)
@@ -623,7 +627,7 @@ class ThisDayInFamilyHistoryGenerator:
 		print("Export complete.")
 
 	def run(self, output_dir="daily_events"):
-		self.connect_db()
+		# self.connect_db()
 		self.generate_events_for_deceased()
 		self.export_daily_events_for_website(output_dir)
 		self.close_db()

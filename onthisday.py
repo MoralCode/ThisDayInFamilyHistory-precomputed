@@ -15,7 +15,7 @@ from pathlib import Path
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Assuming 'gramps_src' is the submodule directory name
-GRAMPS_INSTALL_PATH = Path(script_dir).parent.joinpath("gramps-6.0.6")
+GRAMPS_INSTALL_PATH = Path(sys.argv[1])
 
 if not os.path.exists(GRAMPS_INSTALL_PATH):
 	print(f"Error: Gramps submodule not found at {GRAMPS_INSTALL_PATH}")
@@ -634,27 +634,6 @@ class ThisDayInFamilyHistoryGenerator:
 
 
 if __name__ == "__main__":
-	# IMPORTANT: Replace with the actual path to your Gramps database file.
-	# This is typically a .gramps file.
-	# Example for Linux: "/home/user/.gramps/grampsdb/MyFamilyTree.gramps"
-	# Example for macOS: "/Users/user/Library/Application Support/Gramps/grampsdb/MyFamilyTree.gramps"
-	# Example for Windows: "C:\\Users\\user\\AppData\\Roaming\\Gramps\\grampsdb\\MyFamilyTree.gramps"
-	GRAMPS_DB_PATH = "./tree.gramps"
 
-	# IMPORTANT: You might need to add the Gramps source directory to your
-	# Python path for the `from gramps.gen.db import Db` to work.
-	# Uncomment and modify the line below if you get an ImportError.
-	# sys.path.append('/usr/share/gramps/gramps')
-	# Or, if you know the exact path to the `gen` directory within Gramps source
-	# sys.path.append('/path/to/gramps/gramps/gen')
-
-
-	if GRAMPS_DB_PATH == "path/to/your/gramps/database.gramps":
-		print(
-			"Please update `GRAMPS_DB_PATH` in the script to your actual "
-			"Gramps database file path."
-		)
-		sys.exit(1)
-
-	generator = ThisDayInFamilyHistoryGenerator(GRAMPS_DB_PATH)
+	generator = ThisDayInFamilyHistoryGenerator(sys.argv[2])
 	generator.run()

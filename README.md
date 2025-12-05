@@ -1,10 +1,23 @@
+## This Day In Family History (Precomputed)
+
+
+This repository is my pile of hacks to generate "this day in family history" information for every day of the year, just like the [GRAMPS Plugin](https://gramps-project.org/wiki/index.php/Addon:This_Day_In_Family_History).
+
+This puts the "this day in family history" data in a format that can be put on a website without requiring the publishing of an entire gramps database or something like that.
+
+This repo is mostly throwaway-quality code to fill my need for this. If you decide to use it, know that:
+- I have only ever used it on COPIES of my GRAMPS databases
+- The initial code was initially written by Generative AI based on the [original addon's code](https://github.com/gramps-project/addons-source/tree/maintenance/gramps60/ThisDayInFamilyHistory)
+- I am brand new to GRAMPS development and have no idea what "the proper way" to do any of this should be
+- I run Linux
+
 
 ## Setup
+
+some of this may be optional
 ```
 sudo apt install libgirepository-2.0-dev gir1.2-osmgpsmap-1.0
-
 ```
-
 
 1. download and unpack gramps source tarball somewhere
     - example: https://github.com/gramps-project/gramps/archive/refs/tags/v6.0.6/v6.0.6.tar.gz
@@ -58,12 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.innerHTML = `<h2>On ${today.toLocaleDateString('en-US', {month: 'long', day: 'numeric'})} in Family History:</h2>`;
                 container.appendChild(ul);
             } else {
-                container.innerHTML = `<h2>On ${today.toLocaleDateString('en-US', {month: 'long', day: 'numeric'})} in Family History:</h2><p>... nothing happened for deceased family members!</p>`;
+                container.innerHTML = `<h2>On ${today.toLocaleDateString('en-US', {month: 'long', day: 'numeric'})} in Family History:</h2><p>... nothing happened (thats known about)!</p>`;
             }
         })
         .catch(error => {
             console.error('Error fetching daily events:', error);
-            container.innerHTML = `<h2>On ${today.toLocaleDateString('en-US', {month: 'long', day: 'numeric'})} in Family History:</h2><p>No events found for deceased family members today.</p>`;
+            container.innerHTML = `<h2>On ${today.toLocaleDateString('en-US', {month: 'long', day: 'numeric'})} in Family History:</h2><p>No events found for today.</p>`;
         });
 });
 ```
